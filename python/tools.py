@@ -34,12 +34,15 @@ def importmat(filepath):
 
 
 #####
-def plotvecs(X,title):
+def plotvecs(X,title,style):
     """
     Plot Vectors from Array
     
     """
     plt.figure()
+    plt.title(title)
     for x in X:
-        plt.plot(x)
-        plt.title(title)
+        if style == 'log':
+            plt.semilogy(x)
+        elif style == 'lin':
+            plt.plot(x)

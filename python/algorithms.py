@@ -10,6 +10,31 @@ File: Algorithmen
 
 import numpy as np
 
+
+#####
+def rlsAlgo(N, mu, X, D, w_init):
+    
+    p0 = 1000000;            # Initialisierung von
+    inv_R = p0*eye(N);       # inv_R 
+    
+    adaptlen = length(X)
+    w = w_start         
+    W = zeros(N,adaptlen)
+    E = zeros(adaptlen,1) 
+
+# RLS Update
+
+    for i=N:adaptlen:
+        W(:,i)=w;
+        x = X(i:-1:i-N+1)        #Eingangsvektor (x[k],x[k-1],..,x[k-N+1])
+        y = x.T*w                  # Filterausgang
+        e = D(i)-y               # Fehler
+        c = 1/(rho+x.T*inv_R*x)               
+        inv_R =1 /rho*(inv_R-c*inv_R*x*x.T*inv_R)  # Aufdatierung von inv_R 
+        w=w+inv_R*e*x                           # Aufdatierung von w 
+        E(i) = e
+
+
 #####
 def lmsAlg(N, mu, X, D, w_init):
     """
@@ -41,7 +66,7 @@ def lmsAlg(N, mu, X, D, w_init):
         
         # Chronologisches Speichern
         W[:,i] = w 
-        E[i] = e
+        E[i] = np.square(e)
         Yd[i] = y
         
     print('*** ...LMS done.')
