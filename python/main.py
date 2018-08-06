@@ -7,41 +7,13 @@ Created on Tue Jul 31 22:10:21 2018
 @
 """
 
-import numpy as np
-import scipy.io as sio
-import glob, os
-import matplotlib.pyplot as plt
 
+import tools as ts
 
-# import data
-
-def importmat2(filepath):
-    """
-    Imports mat files to workspace
-    
-    """
-    
-    importMats = {}
-    importFileNames = []
-    
-    print('*** Importing files from directory: '+filepath)
-    for file in os.listdir(filepath):
-        importFileName = file.split('.')[0]
-        print('* importing: '+file)
-        mat = sio.loadmat(filepath+file)
-        importMats[importFileName] = mat
-        importFileNames.append(importFileName)
-    print('*** '+str(len(importFileNames))+' files imported')
-    return importMats, importFileNames
-
-def plotvecs(X):
-    plt.figure()
-    for x in X:
-        plt.plot(x)
 
 # IMPORT DATA
 filepath = './data/'
-importMat, fileNames = importmat2(filepath)
+importMat, fileNames = ts.importmat(filepath)
 
 # Load Input
 x_training = importMat['Training']['x_training']
@@ -65,5 +37,3 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 # Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
 
 
-
-plotvecs([H_FIR1_D.T - H_FIR2_D.T])
