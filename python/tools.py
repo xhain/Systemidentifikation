@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 06 21:42:12 2018
+Created on Mo Aug 06 21:42:12 2018
 
 @author: Maximilian Weber
 
@@ -34,7 +34,7 @@ def importmat(filepath):
 
 
 #####
-def plotvecs(X):
+def plotvecs(X,title):
     """
     Plot Vectors from Array
     
@@ -42,3 +42,4 @@ def plotvecs(X):
     plt.figure()
     for x in X:
         plt.plot(x)
+        plt.title(title)

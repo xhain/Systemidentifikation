@@ -40,10 +40,26 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 # Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
 
 
-
-
+# FIR LMS
 w_init = np.array([[1, 1, 1, 1, 1]])
-E, W, w, Yd = algo.lmsAlg(5, 0.1, H_FIR1_X, H_FIR1_D, w_init)
-        
-        
-     
+mu = 0.01
+E, W, w, Yd = algo.lmsAlg(5, mu, H_FIR1_X, H_FIR1_D, w_init)
+ts.plotvecs(E.T,'FIR Konstant')
+
+
+# FIR LMS Systemwechsel
+w_init = np.array([[1, 1, 1, 1, 1]])
+E, W, w, Yd = algo.lmsAlg(5, mu, H_FIR2_X, H_FIR2_D, w_init)
+ts.plotvecs(E.T,'FIR Systemwechsel')
+
+
+# IIR LMS 
+w_init = np.array([[1, 1, 1, 1, 1]])
+E, W, w, Yd = algo.lmsAlg(5, mu, H_IIR1_X, H_IIR1_D, w_init)
+ts.plotvecs(E.T,'IIR Konstant')
+
+
+# IIR LMS Systemwechsel
+w_init = np.array([[1, 1, 1, 1, 1]])
+E, W, w, Yd = algo.lmsAlg(5, mu, H_IIR2_X, H_IIR2_D, w_init)
+ts.plotvecs(E.T,'IIR Systemwechsel')

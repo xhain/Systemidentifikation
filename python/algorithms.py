@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 31 22:17:21 2018
+Created on Mo Jul 31 22:17:21 2018
 
 @author: Maximilian Weber
 
@@ -15,7 +15,7 @@ def lmsAlg(N, mu, X, D, w_init):
     """
     LMS Algorithm
     """
-    
+    print('*** Starting LMS adaption...')
     w = w_init
     Xlen = X.shape[1]
     W = np.zeros((N, Xlen))
@@ -31,17 +31,18 @@ def lmsAlg(N, mu, X, D, w_init):
         x = X[:,von:bis]
         
         # Ausgangsvektor
-        y = np.dot(x.T, w)
+        y = np.dot(x,w.T)
         
         # Fehler
         e = D[:,i] - y
         
         # Adaption der Koeffizienten
-        w = w[0] + mu * e * x
+        w = w + mu * e * x
         
         # Chronologisches Speichern
         W[:,i] = w 
         E[i] = e
         Yd[i] = y
-    
+        
+    print('*** ...LMS done.')
     return(E,W,w,Yd)
