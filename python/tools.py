@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 31 22:17:21 2018
+Created on Tue Aug 06 21:42:12 2018
 
 @author: Maximilian Weber
 
 Adaptive Filter, SoSe 2018, Prof. Sikora
 File: Toolbox
 """
+
 import os
 import scipy.io as sio
 import matplotlib.pyplot as plt
 
-
+#####
 def importmat(filepath):
     """
-    Imports mat files to workspace
+    Imports *.mat files to workspace
     
     """
     
@@ -32,9 +33,10 @@ def importmat(filepath):
     return importMats, importFileNames
 
 
+#####
 def plotvecs(X):
     """
-    Plot Vectors
+    Plot Vectors from Array
     
     """
     plt.figure()

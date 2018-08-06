@@ -7,8 +7,11 @@ Created on Tue Jul 31 22:10:21 2018
 @
 """
 
-
+# Import tools
 import tools as ts
+import algorithms as algo
+
+import numpy as np
 
 
 # IMPORT DATA
@@ -37,3 +40,10 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 # Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
 
 
+
+
+w_init = np.array([[1, 1, 1, 1, 1]])
+E, W, w, Yd = algo.lmsAlg(5, 0.1, H_FIR1_X, H_FIR1_D, w_init)
+        
+        
+     
