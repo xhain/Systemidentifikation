@@ -5,7 +5,7 @@ Created on Mo Aug 8 11:52:13 2018
 @author: Maximilian Weber
 
 Adaptive Filter, SoSe 2018, Prof. Sikora
-File: Tests
+File: Allgemeine Tests
 """
 
 import numpy as np

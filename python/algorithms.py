@@ -5,7 +5,7 @@ Created on Mo Jul 31 22:17:21 2018
 @author: Maximilian Weber
 
 Adaptive Filter, SoSe 2018, Prof. Sikora
-File: Algorithmen
+File: Algorithmen (LMS, RLS)
 """
 
 import numpy as np
@@ -20,11 +20,11 @@ def rlsAlg(N, mu, X, D, w_init):
     
     print('*** Starting RLS adaption...')
     
-    # Init
+    # Initialize values
     w = w_init 
     Xlen = X.shape[1]
-    rho = 10000
-    R_inv = rho * np.eye(N)
+    eta = 100000
+    R_inv = eta * np.eye(N)
     W = np.zeros((N, Xlen))
     E = np.zeros((Xlen, 1))
 
@@ -35,23 +35,22 @@ def rlsAlg(N, mu, X, D, w_init):
         x = X[:,i-N:i][0]
         x = x[::-1]
         
-        # A priori Ausgangswert
-        y = np.dot(x,w.T)
+        # A priori Output value
+        y = np.dot(x,w)
         
-        # A priori Fehler
+        # A priori error
         e = D[:,i-1] - y
         
-        # Gefilterter normierter Datenvektor
-        z = np.dot(R_inv, x) / (1 + np.dot(x, x * R_inv))
+        # filtered normalized data vector
+        z = np.dot(R_inv, x) / (1 + np.dot(x, R_inv).dot(x))
         
-        # Aufdatierung des optimalen Gewichts
+        # Adjust weight
         w = w + e * z
         
-        # Aufdatierung der Inversen der Autokorrelationsmatrix
-        R_inv = R_inv - z * np.dot(R_inv,x)
+        # Adjust inverse of autocorrelation
+        R_inv = R_inv - z * R_inv * x
         
-        
-        # Chronologisches Speichern
+        # Save MSE and weight for return
         E[i] = np.square(e)
         W[:,i] = w
         
@@ -68,7 +67,7 @@ def lmsAlg(N, mu, X, D, w_init):
     
     print('*** Starting LMS adaption...')
     
-    # Init
+    # Initialize values
     w = w_init
     Xlen = X.shape[1]
     W = np.zeros((N, Xlen))
@@ -78,20 +77,20 @@ def lmsAlg(N, mu, X, D, w_init):
     # Update Loop LMS
     for i in range(N,Xlen):
         
-        # Eingangsvektor
+        # Input vector
         x = X[:,i-N:i][0]
         x = x[::-1]
         
-        # Ausgangsvektor
+        # Output value
         y = np.dot(x,w)
         
-        # Fehler
+        # Calculate error
         e = D[:,i-1] - y
         
-        # Adaption der Koeffizienten
+        # Adjust the weight
         w = w + mu * e * x
         
-        # Chronologisches Speichern
+        # Save MSE and weight for return
         W[:,i] = w
         E[i] = np.square(e)
         Yd[i] = y
