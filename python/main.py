@@ -4,7 +4,7 @@
 Created on Tue Jul 31 22:10:21 2018
 
 @author: Maximilian Weber
-@
+File: Main - running tests and simulations here next to documentation in Notebook
 """
 
 # Import tools
@@ -57,7 +57,7 @@ mu = 0.01
 
 # FIR LMS
 E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
-ts.plotvecs(E.T ,'FIR Konstant LMS','lin',10000)
+ts.errorPlot(E,W,500)
 
 ## FIR LMS Systemwechsel
 #E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR2_X, H_FIR2_D, w_init)
@@ -74,8 +74,8 @@ ts.plotvecs(E.T ,'FIR Konstant LMS','lin',10000)
 
 
 # FIR RLS
-E, W, w, Yd = algo.rlsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
-ts.plotvecs(E.T,'FIR Konstant RLS','lin',10000)
+#E, W, w, Yd = algo.rlsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
+#ts.plotvecs(E.T,'FIR Konstant RLS','lin',10000)
 #ts.plotdb(E.T,'FIR Konstant RLS in dB')
 
 # FIR RLS Systemwechsel

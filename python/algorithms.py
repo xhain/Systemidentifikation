@@ -11,15 +11,36 @@ File: Algorithmen (LMS, RLS)
 import numpy as np
 
 
-####
+#####
+def klmsAlg(N, mu, X, D, w_init, kType='Gaussian'):
+    """
+    KLMS Algorithm
+    Nach Haykin, Liu, Ch.2.7, p.48
+    """ 
+    
+    # Memo: http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#kernel_functions
+    
+    w = w_init
+    Xlen = X.shape[1]
+    W = np.zeros((N, Xlen))
+    E = np.zeros((Xlen, 1))
+    
+    if kType == 'Gaussian':
+        
+    elif kType == 'Polynomial':
+        
+    elif kType == 'Laplacian':
+        
+    elif kType == 'Multiquadratic'
+    
+
+
+#####
 def rlsAlg(N, mu, X, D, w_init): 
     """
     RLS Algorithm
-    Nach Moschytz 4.2, p.137
-    """
-    
-    print('*** Starting RLS adaption...')
-    
+    Nach Moschytz Ch.4.2, p.137
+    """ 
     # Initialize values
     w = w_init 
     Xlen = X.shape[1]
@@ -53,8 +74,7 @@ def rlsAlg(N, mu, X, D, w_init):
         # Save MSE and weight for return
         E[i] = np.square(e)
         W[:,i] = w
-        
-    print('*** ...RLS done.')
+    print('* RLS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
     return(E, W, w, R_inv)
 
 
@@ -62,11 +82,8 @@ def rlsAlg(N, mu, X, D, w_init):
 def lmsAlg(N, mu, X, D, w_init):
     """
     LMS Algorithm
-    Nach Moschytz 3.1, p.85
+    Nach Moschytz Ch.3.1, p.85
     """
-    
-    print('*** Starting LMS adaption...')
-    
     # Initialize values
     w = w_init
     Xlen = X.shape[1]
@@ -95,5 +112,5 @@ def lmsAlg(N, mu, X, D, w_init):
         E[i] = np.square(e)
         Yd[i] = y
         
-    print('*** ...LMS done.')
+    print('* LMS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
     return(E, W, w, Yd)
