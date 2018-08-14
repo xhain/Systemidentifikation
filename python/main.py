@@ -45,7 +45,7 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 # Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
 
 # Add noise to receiver signal
-variance = 0.001
+variance = 0.01
 H_FIR1_D = ts.addNoise(H_FIR1_D,variance)
 
 #
@@ -57,7 +57,7 @@ mu = 0.01
 
 # FIR LMS
 E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
-ts.errorPlot(E,W,500)
+ts.errorPlot(E, W, 5000,style='log')
 
 ## FIR LMS Systemwechsel
 #E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR2_X, H_FIR2_D, w_init)

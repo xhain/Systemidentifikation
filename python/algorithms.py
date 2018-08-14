@@ -9,29 +9,39 @@ File: Algorithmen (LMS, RLS)
 """
 
 import numpy as np
+import kernels as ks
+
+#####
+
 
 
 #####
-def klmsAlg(N, mu, X, D, w_init, kType='Gaussian'):
-    """
-    KLMS Algorithm
-    Nach Haykin, Liu, Ch.2.7, p.48
-    """ 
-    
-    # Memo: http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#kernel_functions
-    
-    w = w_init
-    Xlen = X.shape[1]
-    W = np.zeros((N, Xlen))
-    E = np.zeros((Xlen, 1))
-    
-    if kType == 'Gaussian':
-        
-    elif kType == 'Polynomial':
-        
-    elif kType == 'Laplacian':
-        
-    elif kType == 'Multiquadratic'
+#def klmsAlg(N, mu, X, D, w_init, kType='Gaussian'):
+#    """
+#    KLMS Algorithm
+#    Nach Haykin, Liu, Ch.2.7, p.48
+#    """ 
+#    
+#    # Memo: http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#kernel_functions
+#    
+#    w = w_init
+#    Xlen = X.shape[1]
+#    W = np.zeros((N, Xlen))
+#    E = np.zeros((Xlen, 1))
+#    
+#    for i in range(N,Xlen):
+#        
+#        if kType == 'Gaussian':
+#        
+#        elif kType == 'Polynomial':
+#        
+#        elif kType == 'Laplacian':
+#        
+#        elif kType == 'Multiquadratic'
+#    
+#    
+#    print('* KLMS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
+#    return(E, W, w, R_inv)
     
 
 
@@ -74,6 +84,7 @@ def rlsAlg(N, mu, X, D, w_init):
         # Save MSE and weight for return
         E[i] = np.square(e)
         W[:,i] = w
+        
     print('* RLS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
     return(E, W, w, R_inv)
 
