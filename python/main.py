@@ -12,12 +12,13 @@ import tools as ts
 import algorithms as algo
 
 import numpy as np
+#from scipy import signal as sig
 
 
 # IMPORT DATA
 filepath = './data/'
 importMat, fileNames = ts.importmat(filepath)
-
+    
 # Load Input
 x_training = importMat['Training']['x_training']
 x_test = importMat['Test']['x_test']
@@ -46,7 +47,7 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 
 # Add noise to receiver signal
 variance = 0.01
-H_FIR1_D = ts.addNoise(H_FIR1_D,variance)
+H_FIR1_Dn, SNR1 = ts.addNoise(H_FIR1_D,variance)
 
 #
 # Initialize Test
@@ -56,7 +57,7 @@ mu = 0.01
 
 
 # FIR LMS
-E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
+E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
 ts.errorPlot(E, W, 5000,style='log')
 
 ## FIR LMS Systemwechsel

@@ -14,6 +14,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
+#####
+def eigSpread(X,N):
+    """
+    Calculate Eigenvalue Spread (Moschytz, p.73, 2.4.1)
+    
+    """
+    # Autocorrelation matrix
+    R = np.outer(X[0,:N],X[0,:N])
+    # Eigenvalue decomposition
+    w,v = np.linalg.eig(R)
+    # Divide biggest eigenvalue by smallest eigenvalue
+    return np.abs(np.amax(v) / np.amin(v))
+
+
 #####
 def linSmooth(x, N):
     """
@@ -23,15 +38,36 @@ def linSmooth(x, N):
     csum = np.cumsum(np.insert(x, 0, 0)) 
     return (csum[N:] - csum[:-N]) / float(N)
 
+
 #####
 def replaceZeroes(x):
     """
-    Replace Zeros from data
+    Replaces zeros from data with smallest non-zero value from input
     
     """
     min_nonzero = np.min(x[np.nonzero(x)])
     x[x == 0] = min_nonzero
     return x
+
+
+####
+def SNRdB(X,N):
+    """
+    Calculate Signal-to-Noise-Ratio
+    Returns in dB
+    
+    """
+    # Power of Signal and Noise
+    Xp = np.square(X).mean()
+    Np = np.square(N).mean()
+    
+    if Np == 0:
+        Np = np.finfo(float).tiny
+    
+    # Calculate SNR
+    SNRxn = 10 * np.log10(Xp / Np)
+
+    return np.around(SNRxn,2)
 
 
 #####
@@ -51,9 +87,11 @@ def addNoise(x,variance):
     # and the standard deviation sigma
     noise = np.random.normal(0,sigma,xLen)
     
+    SNR = SNRdB(x,noise)
+    
     # Add noise to input signal
     x_noise = x + noise
-    return x_noise
+    return x_noise, SNR
 
 
 
@@ -139,9 +177,7 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin'):
     
     # linear or log scale?
     if style == 'log':
-        # Normalize to Maxmimum Error
-        maxE = np.amax(Ez)
-        En = np.true_divide(Ez,maxE)
+        En = np.divide(Ez,Ez[0]) #????
         # convert do decibel scale
         En = replaceZeroes(En)
         Eplot = 20 * np.log10(En)
@@ -151,15 +187,19 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin'):
         plt.ylabel('MSE')
         Eplot = Ez
     
+    avgFrom = 2000
+    Eavg = np.average(Eplot[avgFrom:])
     # Plot Error
     plt.plot(Eplot[0:plotLen], 'b', linewidth=1)
+    # Plot Average Error
+    plt.plot([avgFrom, plotLen], [Eavg, Eavg], 'r--', linewidth=1.2)
     plt.xlim(0,plotLen)
     #plt.ylim(-100, 0)
     plt.grid(True)
     plt.title('Learning Curve')
     plt.xlabel('Samples')
-    plt.legend(['avg(E) = '+str(np.average(Eplot).round(2))], loc='right', bbox_to_anchor=(1, 1.1))
-    
+    lgnd = ['MSE','avg(E) = '+str(Eavg.round(2)), ]
+    plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
     # plot Weights
     plt.subplot(212)
