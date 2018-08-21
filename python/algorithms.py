@@ -13,40 +13,48 @@ import kernels as ks
 
 #####
 
+# via https://github.com/pin3da/kernel-adaptive-filtering/blob/master/filters.py
+class klmsAlgo(ks.Kernel):
+    def __init__(
+        self,
+        N,
+        first_input=None,
+        first_output=None,
+        mu=0.5,
+        sigma=1
+    ):
+        if first_input is not None:
+            self.inputs = [first_input]
+        else:
+            self.inputs = [np.zeros(N)]
+        if first_output is not None:
+            self.weights = [first_output * mu]
+        else:
+            self.weights = [0]
+        self.mu = mu
+        self.sigma = sigma
+        self.error = None
 
+    def predict(self, new_input):
+        estimate = 0
+        for i in range(0, len(self.weights)):
+            addition = self.weights[i] * self.kernel(self.inputs[i], new_input)
+            estimate += addition
+        return estimate
 
-#####
-#def klmsAlg(N, mu, X, D, w_init, kType='Gaussian'):
-#    """
-#    KLMS Algorithm
-#    Nach Haykin, Liu, Ch.2.7, p.48
-#    """ 
-#    
-#    # Memo: http://crsouza.com/2010/03/17/kernel-functions-for-machine-learning-applications/#kernel_functions
-#    
-#    w = w_init
-#    Xlen = X.shape[1]
-#    W = np.zeros((N, Xlen))
-#    E = np.zeros((Xlen, 1))
-#    
-#    for i in range(N,Xlen):
-#        
-#        if kType == 'Gaussian':
-#        
-#        elif kType == 'Polynomial':
-#        
-#        elif kType == 'Laplacian':
-#        
-#        elif kType == 'Multiquadratic'
-#    
-#    
-#    print('* KLMS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
-#    return(E, W, w, R_inv)
+    def update(self, new_input, expected):
+        self.error = expected - self.predict(new_input)
+        self.inputs.append(new_input)
+        new_weights = self.mu * self.error
+        self.weights.append(new_weights)
+
+    def name(self):
+        return 'KLMS'
     
 
 
 #####
-def rlsAlg(N, mu, X, D, w_init): 
+def rlsAlg(N, X, D, w_init): 
     """
     RLS Algorithm
     Nach Moschytz Ch.4.2, p.137
@@ -85,7 +93,7 @@ def rlsAlg(N, mu, X, D, w_init):
         E[i] = np.square(e)
         W[:,i] = w
         
-    print('* RLS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
+    print('* RLS: N = '+str(N)+', w = '+str(w))
     return(E, W, w, R_inv)
 
 

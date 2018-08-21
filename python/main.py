@@ -60,33 +60,4 @@ mu = 0.01
 E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
 ts.errorPlot(E, W, 5000,style='log')
 
-## FIR LMS Systemwechsel
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR2_X, H_FIR2_D, w_init)
-#ts.plotvecs(E.T,'FIR Systemwechsel LMS','lin')
-#
-#
-## IIR LMS
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_IIR1_X, H_IIR1_D, w_init)
-#ts.plotvecs(E.T,'IIR Konstant LMS','lin')
-#
-## IIR LMS Systemwechsel
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_IIR2_X, H_IIR2_D, w_init)
-#ts.plotvecs(E.T,'IIR Systemwechsel LMS','lin')
-
-
-# FIR RLS
-#E, W, w, Yd = algo.rlsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init)
-#ts.plotvecs(E.T,'FIR Konstant RLS','lin',10000)
-#ts.plotdb(E.T,'FIR Konstant RLS in dB')
-
-# FIR RLS Systemwechsel
-#E, W, w, Yd = algo.rlsAlg(N, mu, H_FIR2_X, H_FIR2_D, w_init)
-#ts.plotvecs(E.T,'FIR Konstant RLS','lin')
-
-## FIR RLS Systemwechsel
-#E, W, w, Yd = algo.rlsAlg(N, mu, H_IIR1_X, H_IIR1_D, w_init)
-#ts.plotvecs(E.T,'IIR Konstant RLS','lin')
-#
-## FIR RLS Systemwechsel
-#E, W, w, Yd = algo.rlsAlg(N, mu, H_IIR2_X, H_IIR2_D, w_init)
-#ts.plotvecs(E.T,'IIR Konstant RLS','lin')
+#print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )

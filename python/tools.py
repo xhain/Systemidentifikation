@@ -23,11 +23,10 @@ def eigSpread(X,N):
     """
     # Autocorrelation matrix
     R = np.outer(X[0,:N],X[0,:N])
-    # Eigenvalue decomposition
-    w,v = np.linalg.eig(R)
+    # Eigenvalue decomposition, w = eig.vals, v = eig.vecs
+    w, v = np.linalg.eig(R)
     # Divide biggest eigenvalue by smallest eigenvalue
-    return np.abs(np.amax(v) / np.amin(v))
-
+    return np.abs(np.amax(w) / np.amin(w))
 
 #####
 def linSmooth(x, N):
@@ -67,7 +66,7 @@ def SNRdB(X,N):
     # Calculate SNR
     SNRxn = 10 * np.log10(Xp / Np)
 
-    return np.around(SNRxn,2)
+    return np.round(SNRxn,2)
 
 
 #####
@@ -92,7 +91,6 @@ def addNoise(x,variance):
     # Add noise to input signal
     x_noise = x + noise
     return x_noise, SNR
-
 
 
 #####
@@ -122,7 +120,7 @@ def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='MSE'):
     Plot Vectors from Array
     
     """
-    plt.figure(figsize=(12, 4))
+    plt.figure(figsize=(12, 3))
     plt.title(title)
     for x in X:
         if style == 'log':
@@ -155,13 +153,13 @@ def hist(X, title):
     Quick Histrogram
     
     """
-    plt.figure(figsize=(12, 4))
+    plt.figure(figsize=(12, 3))
     plt.title(title)
     plt.hist(X[0], facecolor='b')
     plt.grid(True)
     
 #####
-def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin'):
+def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
     """
     Plots Learning Curve & Weights over Iterations
     
@@ -172,22 +170,22 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin'):
     
     # Preparation (trim N zeros from start)
     Ez = np.trim_zeros(E, 'f')
+    
     # Moving Average Smoothing of Plot (Moschytz, p.153/154)
     Ez = linSmooth(Ez, 30)
     
     # linear or log scale?
     if style == 'log':
-        En = np.divide(Ez,Ez[0]) #????
+        Ez = replaceZeroes(Ez)
+        #En = np.divide(Ez,Ez[0])
         # convert do decibel scale
-        En = replaceZeroes(En)
-        Eplot = 20 * np.log10(En)
+        Eplot = 10 * np.log10(Ez/Ez[0])
         plt.ylabel('MSE (dB)')
         
     elif style == 'lin':
         plt.ylabel('MSE')
         Eplot = Ez
     
-    avgFrom = 2000
     Eavg = np.average(Eplot[avgFrom:])
     # Plot Error
     plt.plot(Eplot[0:plotLen], 'b', linewidth=1)
@@ -202,10 +200,13 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin'):
     plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
     # plot Weights
+    Wplot = []
     plt.subplot(212)
     nTaps = W.shape[0]
     for row in range(0, nTaps):
-        plt.plot(W[row,0:plotLen], linewidth=1)
+        Wplot = np.trim_zeros(W[row,:], 'f')
+        Wplot = np.insert(Wplot, 0, 0., axis=0)
+        plt.plot(Wplot, linewidth=1)
     lgnd = [ 'w = '+str(np.around(W[i,-1],3)) for i in range(0,nTaps) ]
     plt.legend(lgnd, loc='right',title="Final Weights")
     plt.xlim(0,plotLen)
