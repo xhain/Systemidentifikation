@@ -46,7 +46,7 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 # Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
 
 # Add noise to receiver signal
-variance = 0.01
+variance = 0.1
 H_FIR1_Dn, SNR1 = ts.addNoise(H_FIR1_D,variance)
 
 #
@@ -54,10 +54,13 @@ H_FIR1_Dn, SNR1 = ts.addNoise(H_FIR1_D,variance)
 N = 5
 w_init = np.zeros(N)
 mu = 0.01
+plotLen = 500
 
 
 # FIR LMS
 E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-ts.errorPlot(E, W, 5000,style='log')
+ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
 #print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
+E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
+ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')

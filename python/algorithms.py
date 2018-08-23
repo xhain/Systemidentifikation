@@ -84,7 +84,7 @@ def rlsAlg(N, X, D, w_init):
         z = np.dot(R_inv, x) / (1 + np.dot(x, R_inv).dot(x))
         
         # Adjust weight
-        w = w + e * z
+        w = w + np.multiply(e, z)
         
         # Adjust inverse of autocorrelation
         R_inv = R_inv - z * R_inv * x
@@ -133,3 +133,5 @@ def lmsAlg(N, mu, X, D, w_init):
         
     print('* LMS: N = '+str(N)+', mu = '+str(mu)+', w = '+str(w))
     return(E, W, w, Yd)
+    
+print('*** Algorithms succesfully loaded.')

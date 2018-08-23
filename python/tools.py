@@ -176,6 +176,7 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
     
     # linear or log scale?
     if style == 'log':
+        MSEunit = ' dB'
         Ez = replaceZeroes(Ez)
         #En = np.divide(Ez,Ez[0])
         # convert do decibel scale
@@ -183,6 +184,7 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
         plt.ylabel('MSE (dB)')
         
     elif style == 'lin':
+        MSEunit = ''
         plt.ylabel('MSE')
         Eplot = Ez
     
@@ -196,7 +198,7 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
     plt.grid(True)
     plt.title('Learning Curve')
     plt.xlabel('Samples')
-    lgnd = ['MSE','avg(E) = '+str(Eavg.round(2)), ]
+    lgnd = ['MSE','avg(E) = '+str(Eavg.round(2))+str(MSEunit)]
     plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
     # plot Weights
@@ -218,4 +220,5 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
     # Layouting
     fig.tight_layout()
     fig.subplots_adjust(top=0.88)
-    
+
+print('*** Toolbox succesfully loaded.')
