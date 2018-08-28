@@ -56,12 +56,12 @@ plotLen = 500
 
 
 ## FIR LMS
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-#ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
-#
-##print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
-#E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
-#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
+E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
+ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
+
+#print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
+E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
+ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
 
 

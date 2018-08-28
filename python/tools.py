@@ -183,7 +183,7 @@ def hist(X, title):
     plt.grid(True)
     
 #####
-def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
+def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000,avgTo=None):
     """
     Plots Learning Curve & Weights over Iterations
     
@@ -197,6 +197,10 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
     
     # Moving Average Smoothing of Plot (Moschytz, p.153/154)
     Ez = linSmooth(Ez, 30)
+    
+    # average to?
+    if avgTo == None:
+        avgTo = plotLen
     
     # linear or log scale?
     if style == 'log':
@@ -212,17 +216,21 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000):
         plt.ylabel('MSE')
         Eplot = Ez
     
-    Eavg = np.average(Eplot[avgFrom:])
+    EavgOpt = np.average(Eplot[avgFrom:])
+    EavgAll = np.average(Eplot[:avgTo])
     # Plot Error
     plt.plot(Eplot[0:plotLen], 'b', linewidth=1)
     # Plot Average Error
-    plt.plot([avgFrom, plotLen], [Eavg, Eavg], 'r--', linewidth=1.2)
+    plt.plot([avgFrom, plotLen], [EavgOpt, EavgOpt], 'r--', linewidth=1.2)
+    plt.plot([0, avgTo], [EavgAll, EavgAll], 'g--', linewidth=1.2)
     plt.xlim(0,plotLen)
     #plt.ylim(-100, 0)
     plt.grid(True)
     plt.title('Learning Curve')
     plt.xlabel('Samples')
-    lgnd = ['MSE','avg(E) = '+str(Eavg.round(2))+str(MSEunit)]
+    avgOptStr = 'avgOpt(E) = '+str(EavgOpt.round(2))+str(MSEunit)
+    avgAllStr = 'avgAll(E) = '+str(EavgAll.round(2))+str(MSEunit)
+    lgnd = ['MSE', avgOptStr, avgAllStr]
     plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
     # plot Weights
