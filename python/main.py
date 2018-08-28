@@ -12,6 +12,7 @@ import tools as ts
 import algorithms as algo
 
 import numpy as np
+#import matplotlib.pyplot as plt
 #from scipy import signal as sig
 
 
@@ -20,8 +21,8 @@ filepath = './data/'
 importMat, fileNames = ts.importmat(filepath)
     
 # Load Input
-x_training = importMat['Training']['x_training']
-x_test = importMat['Test']['x_test']
+x_training = importMat['Training']['x_training'].T
+x_test = importMat['Test']['x_test'].T
 
 # Load FIR Systems
 H_FIR1_D = importMat['System_FIR27']['D_']
@@ -42,14 +43,11 @@ H_IIR2_D = importMat['Systemwechsel_IIR27']['D_']
 H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 
 
-# Remember: System Change doesn't have to be manually induced. H_*IR2_D already changes from one to the other.
-# Proof: plotvecs([H_FIR1_D.T - H_FIR2_D.T]), plotvecs([H_IIR1_D.T - H_IIR2_D.T])
-
 # Add noise to receiver signal
 variance = 0.1
 H_FIR1_Dn, SNR1 = ts.addNoise(H_FIR1_D,variance)
 
-#
+
 # Initialize Test
 N = 5
 w_init = np.zeros(N)
@@ -57,10 +55,31 @@ mu = 0.01
 plotLen = 500
 
 
-# FIR LMS
-E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
+## FIR LMS
+#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
+#ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
+#
+##print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
+#E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
+#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
-#print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
-E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
-ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
+
+
+# KLMS
+#ts.plot(x_training.T,'training')
+#ts.plot(x_test.T,'test')
+
+Kern = algo.klmsAlgo(N,'gauss', mu=0.01, sigma=3)
+Kern, Et, Wt, Yt = algo.Klearn(Kern, N, x_training, x_training)
+
+Kern, Ep, Wp, Yp = algo.Kpredict(Kern, N, x_test, x_test)
+ts.plot(Ep.T, 'KLMS Lernkurve für N = '+str(N),xLim=10000)
+
+E, W, w, Yd = algo.lmsAlg(N, mu, x_test, x_test, w_init)
+ts.errorPlot(E, W, 10000,'LMS Lernkurve für KLMS Vergleich, N = '+str(N), style='lin')
+
+
+
+
+
+

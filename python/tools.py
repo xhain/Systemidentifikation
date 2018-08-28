@@ -14,6 +14,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+#####
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    @author: Greenstick (via Stackoverflow)
+    via: https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 #####
 def eigSpread(X,N):
@@ -115,12 +137,12 @@ def importmat(filepath):
 
 
 #####
-def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='MSE'):
+def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='unspecified'):
     """
     Plot Vectors from Array
     
     """
-    plt.figure(figsize=(12, 3))
+    fig = plt.figure(figsize=(12, 3))
     plt.title(title)
     for x in X:
         if style == 'log':
@@ -131,6 +153,7 @@ def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='MSE'):
         plt.grid(True)
         plt.xlabel(xlab)
         plt.ylabel(ylab)
+    fig.tight_layout()
 
     
 #####
@@ -141,9 +164,10 @@ def plotdb(X,title='No Title', xLim=400):
     """
     X = X / np.amax(np.abs(X))
     X = 20 * np.log10(np.abs(X))
-    plt.figure(figsize=(12, 4))
+    fig = plt.figure(figsize=(12, 4))
     plt.title(title)
-    plt.plot(X, linewidth=1)
+    plt.plot(X[0,:], linewidth=1)
+    fig.tight_layout()
 
     
     

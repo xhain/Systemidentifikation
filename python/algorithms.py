@@ -10,48 +10,114 @@ File: Algorithmen (LMS, RLS)
 
 import numpy as np
 import kernels as ks
+import tools as ts
 
 #####
+def Kpredict(Kern, N, X, D):
+    """
+    KLMS online test routine
+    """ 
+    Xlen = X.shape[1]
+    W = np.zeros((N, Xlen))
+    E = np.zeros((Xlen, 1))
+    Yd = np.zeros((Xlen, 1))
 
-# via https://github.com/pin3da/kernel-adaptive-filtering/blob/master/filters.py
-class klmsAlgo(ks.Kernel):
+    for i in range(N,Xlen):
+        
+        # cut a data chunk
+        x = X[:,i-N:i][0]
+        x = x[::-1]
+        
+        # predict for chunk (legacy code)
+        y = Kern.predict(x)
+        e = D[:,i-1] - y
+        
+        # save Test Error and Prediction
+        E[i] = np.square(e)
+        Yd[i] = y
+        ts.printProgressBar(i,Xlen,prefix='KLMS Predicting',length=25)
+        
+    return Kern, E, W, Yd
+
+
+#####
+def Klearn(Kern, N, X, D):
+    """
+    KLMS online train routine
+    """ 
+    Xlen = X.shape[1]
+    W = np.zeros((N, Xlen))
+    E = np.zeros((Xlen, 1))
+    Yd = np.zeros((Xlen, 1))
+
+    for i in range(N,Xlen):
+        
+        # cut a data chunk
+        x = X[:,i-N:i][0]
+        x = x[::-1]
+        d = D[:,i-1]
+        
+        # update for chunk
+        Kern.update(x,d)
+
+        # save Training Error
+        E[i] = np.square(Kern.error)
+        ts.printProgressBar(i,Xlen,prefix='KLMS Learning',length=25)
+        
+    return Kern, E, W, Yd
+
+
+#####
+class klmsAlgo(ks.Kernel):    
+    """
+    KLMS class
+    Nach Haykin, Liu, Principe, p.34 / Algorithm 2
+    """ 
+    # via https://github.com/pin3da/kernel-adaptive-filtering/blob/master/filters.py
     def __init__(
         self,
         N,
-        first_input=None,
-        first_output=None,
-        mu=0.5,
-        sigma=1
+        kFun = 'gauss',
+        X = None,
+        W = None,
+        mu = 0.5, # learning rate / step size
+        sigma = 1, # bandwidth
     ):
-        if first_input is not None:
-            self.inputs = [first_input]
+        # Prepare I/O and weights
+        if X is not None:
+            self.data = [X]
         else:
-            self.inputs = [np.zeros(N)]
-        if first_output is not None:
-            self.weights = [first_output * mu]
+            self.data = np.zeros(N)
+        if W is not None:
+            self.weights = [W * mu]
         else:
-            self.weights = [0]
+            self.weights = np.zeros(N)
+            
         self.mu = mu
         self.sigma = sigma
         self.error = None
+        
+        # Choose Kernel
+        if kFun == 'gauss':
+            self.kFun = self.gaussK
+        elif kFun == 'laplace':
+            self.kFun = self.laplaceK
+        else:
+            self.kFun = self.gaussK
 
-    def predict(self, new_input):
-        estimate = 0
+    def predict(self, new_x):
+        prediction = 0
         for i in range(0, len(self.weights)):
-            addition = self.weights[i] * self.kernel(self.inputs[i], new_input)
-            estimate += addition
-        return estimate
+            aufdat = self.weights[i] * self.kFun(self.data[i], new_x)
+            prediction += aufdat
+        return prediction
 
-    def update(self, new_input, expected):
-        self.error = expected - self.predict(new_input)
-        self.inputs.append(new_input)
-        new_weights = self.mu * self.error
-        self.weights.append(new_weights)
-
-    def name(self):
-        return 'KLMS'
+    def update(self, new_x, D):
+        self.error = D - self.predict(new_x)
+        self.data = np.append(self.data, new_x)
+        weights_new = self.mu * self.error
+        self.weights = np.append(self.weights, weights_new)
     
-
 
 #####
 def rlsAlg(N, X, D, w_init): 
