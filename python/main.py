@@ -12,7 +12,7 @@ import tools as ts
 import algorithms as algo
 
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 #from scipy import signal as sig
 
 
@@ -56,12 +56,12 @@ plotLen = 500
 
 
 ## FIR LMS
-E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
-
-#print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
-E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
-ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
+#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
+#ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
+#
+##print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
+#E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
+#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
 
 
@@ -69,14 +69,44 @@ ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='
 #ts.plot(x_training.T,'training')
 #ts.plot(x_test.T,'test')
 
-Kern = algo.klmsAlgo(N,'gauss', mu=0.01, sigma=3)
-Kern, Et, Wt, Yt = algo.Klearn(Kern, N, x_training, x_training)
+a = 0
+b = 500
+c = a + b
 
-Kern, Ep, Wp, Yp = algo.Kpredict(Kern, N, x_test, x_test)
-ts.plot(Ep.T, 'KLMS Lernkurve für N = '+str(N),xLim=10000)
+traindata = x_training[:,a:c] #- np.mean(x_training)
+testdata = x_test[:,a:c] #- np.mean(x_test)
 
-E, W, w, Yd = algo.lmsAlg(N, mu, x_test, x_test, w_init)
-ts.errorPlot(E, W, 10000,'LMS Lernkurve für KLMS Vergleich, N = '+str(N), style='lin')
+print('Train mean: ',np.mean(traindata))
+print('Test mean:  ',np.mean(testdata))
+
+Kern = algo.klms(N, 'gauss', mu=0.01, sigma=0.5) # sig = 0.5 for N = 5
+Et = algo.Klearn(Kern, N, traindata, traindata)
+Ep, Yp = algo.Kpredict(Kern, N, testdata, testdata)
+#ts.plot(Ep.T, 'KLMS Lernkurve für N = '+str(N), xLim=500)
+
+Ymean = np.mean(Yp)
+Tmean = np.mean(testdata)
+Cmean = (Ymean + Tmean) / 2
+
+# # # # # PLOT # # # # # #
+plt.clf()
+fig = plt.figure
+plt.subplot(211)
+#plt.plot(traindata.T)
+plt.plot(testdata.T[N:],'k')
+plt.plot(Yp[N:],'g')
+#plt.plot([a, c], [Tmean, Tmean], 'k--')
+#plt.plot([a, c], [Ymean, Ymean], 'g--')
+#plt.plot([a, c], [Cmean, Cmean], 'r--')
+plt.legend(['Testdata','Prediction'])
+plt.subplot(212)
+plt.plot(Ep[N:],'r')
+plt.legend(['MSE'])
+
+
+
+#E, W, w, Yd = algo.lmsAlg(N, mu, x_test, x_test, w_init)
+#ts.errorPlot(E, W, 10000,'LMS Lernkurve für KLMS Vergleich, N = '+str(N), style='lin')
 
 
 

@@ -15,47 +15,49 @@ import tools as ts
 #####
 def Kpredict(Kern, N, X, D):
     """
-    KLMS online test routine
+    KLMS online test/predict routine
     """ 
     Xlen = X.shape[1]
-    W = np.zeros((N, Xlen))
     E = np.zeros((Xlen, 1))
-    Yd = np.zeros((Xlen, 1))
+    Y = np.zeros((Xlen, 1))
 
     for i in range(N,Xlen):
         
         # cut a data chunk
         x = X[:,i-N:i][0]
-        x = x[::-1]
+        #x = x[::-1] # flip?
+        d = D[:,i-1]
         
         # predict for chunk (legacy code)
         y = Kern.predict(x)
-        e = D[:,i-1] - y
+        Kern.error = d - y
         
         # save Test Error and Prediction
-        E[i] = np.square(e)
-        Yd[i] = y
+        E[i] = np.square(Kern.error)
+        Y[i] = y #- X[:,i][0]
+        
         ts.printProgressBar(i,Xlen,prefix='KLMS Predicting',length=25)
         
-    return Kern, E, W, Yd
+    print('KLMS Predicting: 100% Done.')
+    return E, Y
 
 
 #####
 def Klearn(Kern, N, X, D):
     """
-    KLMS online train routine
+    KLMS online update/train routine
     """ 
     Xlen = X.shape[1]
-    W = np.zeros((N, Xlen))
     E = np.zeros((Xlen, 1))
-    Yd = np.zeros((Xlen, 1))
 
     for i in range(N,Xlen):
         
         # cut a data chunk
         x = X[:,i-N:i][0]
-        x = x[::-1]
-        d = D[:,i-1]
+        #x = x[::-1] # flip?
+        
+        # get desired (i.e. X, but we can add noise later if arg is seperate)
+        d = D[:,i]
         
         # update for chunk
         Kern.update(x,d)
@@ -64,11 +66,12 @@ def Klearn(Kern, N, X, D):
         E[i] = np.square(Kern.error)
         ts.printProgressBar(i,Xlen,prefix='KLMS Learning',length=25)
         
-    return Kern, E, W, Yd
+    print('KLMS Learning: 100% Done.')   
+    return E
 
 
 #####
-class klmsAlgo(ks.Kernel):    
+class klms(ks.Kernel):    
     """
     KLMS class
     Nach Haykin, Liu, Principe, p.34 / Algorithm 2
@@ -105,6 +108,7 @@ class klmsAlgo(ks.Kernel):
         else:
             self.kFun = self.gaussK
 
+    # Prediction routine
     def predict(self, new_x):
         prediction = 0
         for i in range(0, len(self.weights)):
@@ -112,6 +116,7 @@ class klmsAlgo(ks.Kernel):
             prediction += aufdat
         return prediction
 
+    # Update / Training routine
     def update(self, new_x, D):
         self.error = D - self.predict(new_x)
         self.data = np.append(self.data, new_x)
