@@ -14,6 +14,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def safe_div(x, y):
+    """
+    Avoid Divide by Zero
+    
+    """
+    if y == 0:
+        return 0
+    return x / y
+
 #####
 def printProgressBar (iteration, total ,prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """

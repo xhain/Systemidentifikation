@@ -37,8 +37,7 @@ def Kpredict(Kern, N, X, D):
         Y[i] = y #- X[:,i][0]
         
         ts.printProgressBar(i,Xlen,prefix='KLMS Predicting',length=25)
-        
-    print('KLMS Predicting: 100% Done.')
+
     return E, Y
 
 
@@ -66,7 +65,6 @@ def Klearn(Kern, N, X, D):
         E[i] = np.square(Kern.error)
         ts.printProgressBar(i,Xlen,prefix='KLMS Learning',length=25)
         
-    print('KLMS Learning: 100% Done.')   
     return E
 
 
@@ -75,8 +73,8 @@ class klms(ks.Kernel):
     """
     KLMS class
     Nach Haykin, Liu, Principe, p.34 / Algorithm 2
-    """ 
-    # via https://github.com/pin3da/kernel-adaptive-filtering/blob/master/filters.py
+    """
+    
     def __init__(
         self,
         N,
@@ -125,10 +123,10 @@ class klms(ks.Kernel):
     
 
 #####
-def rlsAlg(N, X, D, w_init): 
+def rlsAlg(N, X, D, w_init, memleak=0.0): 
     """
     RLS Algorithm
-    Nach Moschytz Ch.4.2, p.137
+    Nach Moschytz Ch.4.2, p.137 / Ch.4.3, p.145
     """ 
     # Initialize values
     w = w_init 
@@ -137,6 +135,11 @@ def rlsAlg(N, X, D, w_init):
     R_inv = eta * np.eye(N)
     W = np.zeros((N, Xlen))
     E = np.zeros((Xlen, 1))
+    
+    # 0 < rho < 1, Moschytz p.145, RlS-Algo mit Vergessensfaktor
+    if memleak < 0 or memleak > 1:
+        raise ValueError('This parameter must be a Positive Number between 0 and 1')
+    rho = np.clip(1.0 - memleak, 0.0001, 1.0)
 
     # Update Loop RLS
     for i in range(N,Xlen):
@@ -152,13 +155,13 @@ def rlsAlg(N, X, D, w_init):
         e = D[:,i-1] - y
         
         # filtered normalized data vector
-        z = np.dot(R_inv, x) / (1 + np.dot(x, R_inv).dot(x))
+        z = np.dot(R_inv, x) / (rho + np.dot(x, R_inv).dot(x))
         
         # Adjust weight
         w = w + np.multiply(e, z)
         
         # Adjust inverse of autocorrelation
-        R_inv = R_inv - z * R_inv * x
+        R_inv = ts.safe_div(1,rho) * (R_inv - z * R_inv * x)
         
         # Save MSE and weight for return
         E[i] = np.square(e)
