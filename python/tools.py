@@ -23,6 +23,7 @@ def safe_div(x, y):
         return 0
     return x / y
 
+
 #####
 def printProgressBar (iteration, total ,prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """
@@ -45,6 +46,7 @@ def printProgressBar (iteration, total ,prefix = '', suffix = '', decimals = 1, 
     if iteration == total:
         print()
 
+
 #####
 def eigSpread(X,N):
     """
@@ -58,10 +60,13 @@ def eigSpread(X,N):
     # Divide biggest eigenvalue by smallest eigenvalue
     return np.abs(np.amax(w) / np.amin(w))
 
+
 #####
 def linSmooth(x, N):
     """
     Smooth data with moving average over N values
+    @author: Alleo (Stackoverflow)
+    via: https://stackoverflow.com/a/27681394/4888669
     
     """
     csum = np.cumsum(np.insert(x, 0, 0)) 
@@ -189,6 +194,7 @@ def hist(X, title):
     plt.title(title)
     plt.hist(X[0], facecolor='b')
     plt.grid(True)
+    
     
 #####
 def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000,avgTo=None):

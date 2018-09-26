@@ -161,7 +161,7 @@ def rlsAlg(N, X, D, w_init, memleak=0.0):
         w = w + np.multiply(e, z)
         
         # Adjust inverse of autocorrelation
-        R_inv = ts.safe_div(1,rho) * (R_inv - z * R_inv * x)
+        R_inv = 1/rho * (R_inv - z * R_inv * x)
         
         # Save MSE and weight for return
         E[i] = np.square(e)

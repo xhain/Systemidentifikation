@@ -44,7 +44,9 @@ H_IIR2_X = importMat['Systemwechsel_IIR27']['X']
 
 
 # Add noise to receiver signal
-variance = 0.1
+variance = 0.0
+H_FIR1_Dn, SNR1 = ts.addNoise(H_FIR1_D,variance)
+
 H_FIR2_Dn, SNR1 = ts.addNoise(H_FIR2_D,variance)
 
 
@@ -56,11 +58,11 @@ plotLen = 10000
 
 
 ## FIR LMS
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-#ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
+E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
+ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
 #
-E, W, w, Yd = algo.rlsAlg(N, H_FIR2_X, H_FIR2_Dn, w_init, memleak=0.009)
-ts.errorPlot(E, W, plotLen,'RLS Lernkurve für IIR-Systemwechsel, N = '+str(N), style='lin')
+#E, W, w, Yd = algo.rlsAlg(N, H_FIR2_X, H_FIR2_Dn, w_init, memleak=0.01)
+#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für IIR-Systemwechsel, N = '+str(N), style='lin')
 #
 ##print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
 #E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
