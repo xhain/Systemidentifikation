@@ -242,8 +242,8 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000,a
     plt.grid(True)
     plt.title('Learning Curve')
     plt.xlabel('Samples')
-    avgOptStr = 'avgOpt(E) = '+str(EavgOpt.round(2))+str(MSEunit)
-    avgAllStr = 'avgAll(E) = '+str(EavgAll.round(2))+str(MSEunit)
+    avgOptStr = 'avgOpt(MSE) = '+str(EavgOpt.round(2))+str(MSEunit)
+    avgAllStr = 'avgAll(MSE) = '+str(EavgAll.round(2))+str(MSEunit)
     lgnd = ['MSE', avgOptStr, avgAllStr]
     plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
