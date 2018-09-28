@@ -177,7 +177,7 @@ def plotdb(X,title='No Title', xLim=400):
     """
     X = X / np.amax(np.abs(X))
     X = 20 * np.log10(np.abs(X))
-    fig = plt.figure(figsize=(12, 4))
+    fig = plt.figure(figsize=(12, 3))
     plt.title(title)
     plt.plot(X[0,:], linewidth=1)
     fig.tight_layout()

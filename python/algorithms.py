@@ -12,115 +12,108 @@ import numpy as np
 import kernels as ks
 import tools as ts
 
+
 #####
-def Kpredict(Kern, N, X, D):
+def Kpredict(Kern, N, X):
     """
     KLMS online test/predict routine
     """ 
     Xlen = X.shape[1]
-    E = np.zeros((Xlen, 1))
-    Y = np.zeros((Xlen, 1))
+    Kern.prediction = [0]
+    Kern.errors = [0] 
 
     for i in range(N,Xlen):
         
         # cut a data chunk
         x = X[:,i-N:i][0]
-        #x = x[::-1] # flip?
-        d = D[:,i-1]
+        x = x[::-1] # flip
         
-        # predict for chunk (legacy code)
         y = Kern.predict(x)
-        Kern.error = d - y
+        
+        # calculate error
+        Kern.error = X[:,i] - y
+        Kern.prediction.append(y)
         
         # save Test Error and Prediction
-        E[i] = np.square(Kern.error)
-        Y[i] = y #- X[:,i][0]
+        Kern.errors.append(np.square(Kern.error))
         
+        # Progress Bar
         ts.printProgressBar(i,Xlen,prefix='KLMS Predicting',length=25)
-
-    return E, Y
 
 
 #####
-def Klearn(Kern, N, X, D):
+def Klearn(Kern, N, X):
     """
     KLMS online update/train routine
     """ 
     Xlen = X.shape[1]
-    E = np.zeros((Xlen, 1))
-
+    
     for i in range(N,Xlen):
         
         # cut a data chunk
         x = X[:,i-N:i][0]
-        #x = x[::-1] # flip?
-        
-        # get desired (i.e. X, but we can add noise later if arg is seperate)
-        d = D[:,i]
+        x = x[::-1] # flip
         
         # update for chunk
-        Kern.update(x,d)
-
-        # save Training Error
-        E[i] = np.square(Kern.error)
-        ts.printProgressBar(i,Xlen,prefix='KLMS Learning',length=25)
+        Kern.update(x, X[:,i])
         
-    return E
+        # Progress Bar
+        ts.printProgressBar(i,Xlen,prefix='KLMS Learning',length=25)
 
 
 #####
-class klms(ks.Kernel):    
+class klms(ks.Kernel):
     """
     KLMS class
     Nach Haykin, Liu, Principe, p.34 / Algorithm 2
     """
-    
     def __init__(
         self,
-        N,
+        N = 5,
         kFun = 'gauss',
-        X = None,
-        W = None,
-        mu = 0.5, # learning rate / step size
-        sigma = 1, # bandwidth
+        mu = 0.5,
+        sigma = 1
     ):
-        # Prepare I/O and weights
-        if X is not None:
-            self.data = [X]
-        else:
-            self.data = np.zeros(N)
-        if W is not None:
-            self.weights = [W * mu]
-        else:
-            self.weights = np.zeros(N)
-            
+        self.data = [0]
+        self.weights = [0]
         self.mu = mu
         self.sigma = sigma
         self.error = None
+        self.prediction = [0] 
+        self.errors = [0]
         
-        # Choose Kernel
+        # choose kernel type (to be expanded)
         if kFun == 'gauss':
             self.kFun = self.gaussK
         elif kFun == 'laplace':
             self.kFun = self.laplaceK
         else:
             self.kFun = self.gaussK
-
-    # Prediction routine
-    def predict(self, new_x):
-        prediction = 0
-        for i in range(0, len(self.weights)):
-            aufdat = self.weights[i] * self.kFun(self.data[i], new_x)
-            prediction += aufdat
-        return prediction
-
-    # Update / Training routine
-    def update(self, new_x, D):
-        self.error = D - self.predict(new_x)
-        self.data = np.append(self.data, new_x)
-        weights_new = self.mu * self.error
-        self.weights = np.append(self.weights, weights_new)
     
+    def predict(self, x):
+        
+        # initialize estimate
+        predict = 0
+        for i in range(len(self.weights)):
+            # predict for every datapoint i with according weight (past)
+            predict_i = self.weights[i] * self.kFun(self.data[i],x)
+            # sum all datapoints running i to estimate prediction
+            predict += predict_i
+        return predict
+    
+    def update(self, x, desired):
+        # calculate error for current prediction towards desired output
+        self.error = desired - self.predict(x)
+        # calculate weight based on error & learning rate
+        new_weight = self.mu * self.error
+        # add weights to stack (past)
+        self.weights.append(new_weight)
+        # add datapoint to stack (past)
+        self.data.append(x)
+        # add prediction to stack
+        self.prediction.append(self.predict(x))
+        self.errors.append(self.error**2)
+
 
 #####
 def rlsAlg(N, X, D, w_init, memleak=0.0): 
