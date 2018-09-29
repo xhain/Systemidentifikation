@@ -165,7 +165,7 @@ def rlsAlg(N, X, D, w_init, memleak=0.0):
 
 
 #####
-def lmsAlg(N, mu, X, D, w_init):
+def lmsAlg(N, mu, X, D, w_init, predict=False):
     """
     LMS Algorithm
     Nach Moschytz Ch.3.1, p.85
@@ -188,7 +188,10 @@ def lmsAlg(N, mu, X, D, w_init):
         y = np.dot(x,w)
         
         # Calculate error
-        e = D[:,i-1] - y
+        if predict == True:
+            e = D[:,i] - y
+        else:
+            e = D[:,i-1] - y
         
         # Adjust the weight
         w = w + mu * e * x

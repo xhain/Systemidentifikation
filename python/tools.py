@@ -155,7 +155,7 @@ def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='unspecif
     Plot Vectors from Array
     
     """
-    fig = plt.figure(figsize=(12, 3))
+    fig = plt.figure(figsize=(10, 3))
     plt.title(title)
     for x in X:
         if style == 'log':
@@ -190,7 +190,7 @@ def hist(X, title):
     Quick Histrogram
     
     """
-    plt.figure(figsize=(12, 3))
+    plt.figure(figsize=(10, 3))
     plt.title(title)
     plt.hist(X[0], facecolor='b')
     plt.grid(True)
@@ -202,7 +202,7 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000,a
     Plots Learning Curve & Weights over Iterations
     
     """
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(10, 6))
     fig.suptitle(title, fontsize=14)
     plt.subplot(211)
     
@@ -242,8 +242,8 @@ def errorPlot(E, W, plotLen=500, title='No Title Set',style='lin',avgFrom=2000,a
     plt.grid(True)
     plt.title('Learning Curve')
     plt.xlabel('Samples')
-    avgOptStr = 'avgOpt(MSE) = '+str(EavgOpt.round(2))+str(MSEunit)
-    avgAllStr = 'avgAll(MSE) = '+str(EavgAll.round(2))+str(MSEunit)
+    avgOptStr = 'avgOpt(MSE) = '+str(EavgOpt.round(3))+str(MSEunit)
+    avgAllStr = 'avgAll(MSE) = '+str(EavgAll.round(3))+str(MSEunit)
     lgnd = ['MSE', avgOptStr, avgAllStr]
     plt.legend(lgnd, loc='right', bbox_to_anchor=(1, 1.2))
     
