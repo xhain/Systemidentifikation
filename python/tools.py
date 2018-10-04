@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+#####
 def safe_div(x, y):
     """
     Avoid Divide by Zero
@@ -155,7 +156,7 @@ def plot(X,title='No Title',style='lin',xLim=400, xlab='Samples', ylab='unspecif
     Plot Vectors from Array
     
     """
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(10, 2))
     plt.title(title)
     for x in X:
         if style == 'log':
@@ -190,7 +191,7 @@ def hist(X, title):
     Quick Histrogram
     
     """
-    plt.figure(figsize=(10, 3))
+    plt.figure(figsize=(10, 2))
     plt.title(title)
     plt.hist(X[0], facecolor='b')
     plt.grid(True)

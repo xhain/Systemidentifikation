@@ -4,7 +4,7 @@
 Created on Tue Jul 31 22:10:21 2018
 
 @author: Maximilian Weber
-File: Main - running tests and simulations here next to documentation in Notebook
+File: Main - For running tests and debugging in Spyder
 """
 
 # Import tools
@@ -54,66 +54,59 @@ plotLen = 10000
 
 
 ## FIR LMS
-#E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_Dn, w_init)
-#ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
-#
-#E, W, w, Yd = algo.rlsAlg(N, H_FIR2_X, H_FIR2_Dn, w_init, memleak=0.01)
-#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für IIR-Systemwechsel, N = '+str(N), style='lin')
-#
-##print('Kond: ', ts.eigSpread(H_FIR1_D,1000) )
-#E, W, w, Yd = algo.rlsAlg(N, H_FIR1_X, H_FIR1_Dn, w_init)
-#ts.errorPlot(E, W, plotLen,'RLS Lernkurve für FIR-System, N = '+str(N), style='lin')
+E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_D, w_init, predict=0)
+ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
+
+# Initialize Test
+N = 5
+w_init = w
+mu = 0.01
+plotLen = 10000
+
+
+## FIR LMS
+E, W, w, Yd = algo.lmsAlg(N, mu, H_FIR1_X, H_FIR1_D, w, predict=True)
+ts.errorPlot(E, W, plotLen,'LMS Lernkurve für FIR-System, N = '+str(N), style='lin')
 
 
 # KLMS
 #ts.plot(x_training.T,'training')
 #ts.plot(x_test.T,'test')
-
-a = 0
-b = 500
-c = a + b
-
-traindata = x_training[:,a:c]
-testdata = x_test[:,a:c]
-
-# # # # # PLOT # # # # # #
-plt.clf()
-fig = plt.figure
-plt.subplot(211)
-
-Kern = algo.klms(N, 'gauss', mu=1.0, sigma=1.0) # sig = 0.5 for N = 5
-algo.Klearn(Kern, N, traindata)
-E = Kern.errors
-
-plt.plot(traindata.T[N:],'k--')
-plt.plot(Kern.prediction,'b')
-
-algo.Kpredict(Kern, N, testdata)
-plt.plot(testdata.T[N:],'k-.')
-plt.plot(Kern.prediction,'r')
-plt.xlim([N,b])
-plt.legend(['Traindata','Training','Testdata','Test'])
-
-plt.subplot(212)
-plt.plot(E,'g')
-plt.plot(Kern.errors,'r')
-plt.ylim([0, 0.2])
-plt.xlim([N,b])
-plt.legend(['MSE Train','MSE Test'])
-
-plt.show()
-
-plt.figure()
-plt.plot(Kern.weights)
-
-
-#ts.plot(Ep.T, 'KLMS Lernkurve für N = '+str(N), xLim=500)
-
-
-
-
-
-#E, W, w, Yd = algo.lmsAlg(N, mu, x_test, x_test, w_init)
-#ts.errorPlot(E, W, 10000,'LMS Lernkurve für KLMS Vergleich, N = '+str(N), style='lin')
-
+#
+#a = 0
+#b = 500
+#c = a + b
+#
+#traindata = x_training[:,a:c]
+#testdata = x_test[:,a:c]
+#
+## # # # # PLOT # # # # # #
+#plt.clf()
+#fig = plt.figure
+#plt.subplot(211)
+#
+#Kern = algo.klms(N, 'gauss', mu=1.0, sigma=1.0) # sig = 0.5 for N = 5
+#algo.Klearn(Kern, N, traindata)
+#E = Kern.errors
+#
+#plt.plot(traindata.T[N:],'k--')
+#plt.plot(Kern.prediction,'b')
+#
+#algo.Kpredict(Kern, N, testdata)
+#plt.plot(testdata.T[N:],'k-.')
+#plt.plot(Kern.prediction,'r')
+#plt.xlim([N,b])
+#plt.legend(['Traindata','Training','Testdata','Test'])
+#
+#plt.subplot(212)
+#plt.plot(E,'g')
+#plt.plot(Kern.errors,'r')
+#plt.ylim([0, 0.2])
+#plt.xlim([N,b])
+#plt.legend(['MSE Train','MSE Test'])
+#
+#plt.show()
+#
+#plt.figure()
+#plt.plot(Kern.weights)

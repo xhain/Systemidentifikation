@@ -25,8 +25,7 @@ def Kpredict(Kern, N, X):
     for i in range(N,Xlen):
         
         # cut a data chunk
-        x = X[:,i-N:i][0]
-        x = x[::-1] # flip
+        x = X[:,i-N:i][0][::-1]
         
         y = Kern.predict(x)
         
@@ -51,8 +50,7 @@ def Klearn(Kern, N, X):
     for i in range(N,Xlen):
         
         # cut a data chunk
-        x = X[:,i-N:i][0]
-        x = x[::-1] # flip
+        x = X[:,i-N:i][0][::-1]
         
         # update for chunk
         Kern.update(x, X[:,i])
@@ -69,7 +67,7 @@ class klms(ks.Kernel):
     """
     def __init__(
         self,
-        N = 5,
+        N = 5, # legacy code. Don't want to remove it. Too many args to change.
         kFun = 'gauss',
         mu = 0.5,
         sigma = 1
@@ -138,8 +136,7 @@ def rlsAlg(N, X, D, w_init, memleak=0.0):
     for i in range(N,Xlen):
         
         # Eingangsvektor
-        x = X[:,i-N:i][0]
-        x = x[::-1]
+        x = X[:,i-N:i][0][::-1]
         
         # A priori Output value
         y = np.dot(x,w)
@@ -181,17 +178,13 @@ def lmsAlg(N, mu, X, D, w_init, predict=False):
     for i in range(N,Xlen):
         
         # Input vector
-        x = X[:,i-N:i][0]
-        x = x[::-1]
+        x = X[:,i-N:i][0][::-1]
         
         # Output value
         y = np.dot(x,w)
         
         # Calculate error
-        if predict == True:
-            e = D[:,i] - y
-        else:
-            e = D[:,i-1] - y
+        e = D[:,i-1] - y
         
         # Adjust the weight
         w = w + mu * e * x
